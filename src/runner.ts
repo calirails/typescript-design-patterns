@@ -1,7 +1,7 @@
-import { Person, Engineer } from "./entities";
-import { KeyValuePairDatabase } from "./engine";
-import { createDatabase } from "./factory";
-import { createSingletonDatabase } from "./singleton";
+import { Person, Engineer } from "./database/models";
+import { KeyValuePairDatabase } from "./database/engine";
+import { createDatabase } from "./gang-of-four/factory";
+import { createSingletonDatabase } from "./gang-of-four/singleton";
 
 const PersonKVPDatabase = new KeyValuePairDatabase<Person>();
 const edison = "person::edison";
@@ -26,7 +26,7 @@ console.log(
 console.log("\n\r");
 
 console.log(
-  "================== Demonstration of Generic Database  ====================="
+  "================== Demonstration of Database Models/Entities and Storage Engine via Generic Classes ====================="
 );
 console.log('Retrieving first person; i.e. "edison" added to database');
 const edisonRecord = PersonKVPDatabase.get(edison);

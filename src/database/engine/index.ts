@@ -1,4 +1,4 @@
-import { Indexable, StorableEntity } from "./entities";
+import { Indexable, StorableEntity } from "../models";
 
 export interface Database<T extends Indexable> {
   set(value: T): T;

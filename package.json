@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "start": "ts-node src/index.ts",
-    "start-2": "ts-node src/database/index.ts",
+    "start-runner": "ts-node src/runner.ts",
     "test": "jest"
   },
   "devDependencies": {

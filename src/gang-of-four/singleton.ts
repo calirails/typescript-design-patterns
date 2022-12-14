@@ -1,6 +1,9 @@
-import { Database } from "./engine";
-import { Indexable, Person, StorableEntity } from "./entities";
+import { Database } from "../database/engine";
+import { Indexable, Person, StorableEntity } from "../database/models";
 
+/*
+ * This demosntrates builds on the Factory and returns a singleton
+ */
 export function createSingletonDatabase<T extends Indexable>() {
   class RedisLiteDatabase implements Database<T> {
     private dataStorage: Map<string, T> = new Map<string, T>();
