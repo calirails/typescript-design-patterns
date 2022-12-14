@@ -7,9 +7,10 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Launch Program",
+      "name": "Debug runner.ts",
       "skipFiles": ["<node_internals>/**"],
       "program": "${workspaceFolder}/src/runner.ts",
+      // "preLaunchTask": "tsc: build - tsconfig.json",
       "outFiles": ["${workspaceFolder}/**/*.js"]
     }
   ]

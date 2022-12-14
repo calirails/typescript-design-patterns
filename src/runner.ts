@@ -133,7 +133,12 @@ RedisObservableDatabaseFromFactory.instance.onAfterSet((event) => {
   console.log(
     "Observable callback triggered from Observable Database AfterSet event triggered"
   );
-  console.table({ ...event });
+  console.table({
+    fromValue: event.existingValue,
+    to: event.newValue,
+    happenedAt: event.createdAt.toDateString(),
+  });
+  // console.table({ ...event });
 });
 
 // Set it initially with no prior value
