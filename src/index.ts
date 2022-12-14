@@ -122,13 +122,16 @@ function createDatabase<T extends BaseRecord>() {
 
 const PokemonDB = createDatabase<Pokemon>();
 
-// Adapter pattern
+// Adapter pattern with Singleton DB instance return from Factory Pattern
 class PokemonDBAdapter implements RecordHandler<Pokemon> {
   addRecord(record: Pokemon) {
     PokemonDB.instance.set(record);
   }
 }
 
+// Use of Observer Pattern to observe every added record to the Database
+// Note: the unsubscribe function is returned as a convenience and is used
+// to terminate the subscribption when obsever is done/disinterested/destroyed.
 const unsubscribe = PokemonDB.instance.onAfterAdd(({ value }) => {
   console.log(value);
 });
