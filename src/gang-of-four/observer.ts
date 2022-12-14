@@ -17,6 +17,15 @@ export interface AfterSet<T> {
   createdAt: Date;
 }
 
+export interface BeforeDelete<T> {
+  existingValue: T | null;
+}
+
+export interface AfterDelete<T> {
+  existingValue: T;
+  deletedAt: Date;
+}
+
 /* this function returns an object with two members; i.e. two functions; namely
  * one to subscribe to events and one to publish an event that is observed by its
  * subscribed listeners. NOTE: that this function defines an inline type that could
@@ -55,12 +64,12 @@ export function createObserver<EventType>(): {
 }
 
 export interface ObservableDatabase<T extends Indexable> extends Database<T> {
-  set(value: T): T;
-  get(id: string): T | null;
-
   // The observable event hooks
   onBeforeSet(Listener: Listener<BeforeSet<T>>): () => void;
   onAfterSet(Listener: Listener<AfterSet<T>>): () => void;
+
+  onBeforeDelete(Listener: Listener<BeforeDelete<T>>): () => void;
+  onAfterDelete(Listener: Listener<AfterDelete<T>>): () => void;
 }
 
 export function createSingletonObservableDatabase<T extends Indexable>() {
@@ -106,6 +115,24 @@ export function createSingletonObservableDatabase<T extends Indexable>() {
       return this.dataStorage.get(id) ?? null;
     }
 
+    public delete(id: string): void {
+      // WARNING: race condition can occur between check and actual delete
+      const target = this.dataStorage.get(id);
+      if (target) {
+        this._beforeDeleteListeners.publish({
+          existingValue: target,
+        });
+      }
+
+      const deleted = this.dataStorage.delete(id);
+      if (target && deleted) {
+        this._afterDeleteListeners.publish({
+          existingValue: target,
+          deletedAt: new Date(),
+        });
+      }
+    }
+
     // The observable event hooks
     private _beforeAddListeners = createObserver<BeforeSet<T>>();
     private _afterAddListeners = createObserver<AfterSet<T>>();
@@ -115,6 +142,16 @@ export function createSingletonObservableDatabase<T extends Indexable>() {
     }
     onAfterSet(listener: Listener<AfterSet<T>>): () => void {
       return this._afterAddListeners.subscribe(listener);
+    }
+
+    private _beforeDeleteListeners = createObserver<BeforeDelete<T>>();
+    private _afterDeleteListeners = createObserver<AfterDelete<T>>();
+
+    onBeforeDelete(listener: Listener<BeforeDelete<T>>): () => void {
+      return this._beforeDeleteListeners.subscribe(listener);
+    }
+    onAfterDelete(listener: Listener<AfterDelete<T>>): () => void {
+      return this._afterDeleteListeners.subscribe(listener);
     }
   }
 

@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "strict": true
-    // "sourceMap": true
+    "strict": true,
+    "sourceMap": true
   }
 }
