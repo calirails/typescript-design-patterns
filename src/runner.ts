@@ -2,6 +2,7 @@ import { Person, Engineer } from "./database/models";
 import { KeyValuePairDatabase } from "./database/engine";
 import { createDatabase } from "./gang-of-four/factory";
 import { createSingletonDatabase } from "./gang-of-four/singleton";
+import { createSingletonObservableDatabase } from "./gang-of-four/observer";
 
 const PersonKVPDatabase = new KeyValuePairDatabase<Person>();
 const edison = "person::edison";
@@ -104,3 +105,51 @@ console.log('Retrieving first Engineer; i.e. "karpathy" added to database');
 const karpathyFromRedisSingletonInstance =
   RedisSingletonDatabaseFromFactory.instance.get(karpathy);
 console.table({ karpathyFromRedisSingletonInstance });
+
+console.log("\n\r");
+console.log("\n\r");
+console.log(
+  "================== Demonstration of Observable/Auditable Database Design Pattern ====================="
+);
+
+console.log(
+  "Adding Observable Design Pattern on top of Factory and Singleton Database Intance rather than previous instances."
+);
+
+debugger;
+const RedisObservableDatabaseFromFactory =
+  createSingletonObservableDatabase<Person>();
+// Add observer with a function that receives an instance that we destruture to just the value
+// RedisObservableDatabaseFromFactory.instance.onAfterSet(
+//   ({ existingValue, newValue, createdAt }) => {
+//     console.log(
+//       "Observable callback triggered from Observable Database AfterSet event triggered"
+//     );
+//     console.table({ createdAt, existingValue, newValue });
+//   }
+// );
+
+RedisObservableDatabaseFromFactory.instance.onAfterSet((event) => {
+  console.log(
+    "Observable callback triggered from Observable Database AfterSet event triggered"
+  );
+  console.table({ ...event });
+});
+
+// Set it initially with no prior value
+RedisObservableDatabaseFromFactory.instance.set(<Engineer>{
+  id: karpathy,
+  name: "Andrei Karpathy.V1",
+  description: "ML/AI Engineer.V1",
+  role: "director of FSD.V1",
+  level: 23,
+});
+
+// Set it again to see the prior value
+RedisObservableDatabaseFromFactory.instance.set(<Engineer>{
+  id: karpathy,
+  name: "Andrei Karpathy.V2",
+  description: "ML/AI Engineer.V2",
+  role: "director of FSD.V2",
+  level: 46,
+});

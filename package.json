@@ -4,8 +4,8 @@
   "main": "",
   "license": "MIT",
   "scripts": {
-    "start": "ts-node src/index.ts",
-    "start-runner": "ts-node src/runner.ts",
+    "start-original": "ts-node src/index.ts",
+    "start": "ts-node src/runner.ts",
     "test": "jest"
   },
   "devDependencies": {
