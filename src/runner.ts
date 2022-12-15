@@ -4,6 +4,7 @@ import { createDatabase } from "./gang-of-four/factory";
 import { createSingletonDatabase } from "./gang-of-four/singleton";
 import { createSingletonObservableDatabase } from "./gang-of-four/observer";
 import { TraversableDatabase } from "./gang-of-four/visitor";
+import { RankableStrategyDatabase } from "./gang-of-four/strategy";
 
 const PersonKVPDatabase = new KeyValuePairDatabase<Person>();
 const edison = "person::edison";
@@ -194,7 +195,7 @@ terminateAfterDeleteSubscription();
 console.log("\n\r");
 console.log("\n\r");
 console.log(
-  "================== Demonstration of Vistor Design Pattern to visit each database item/node ====================="
+  "================== Demonstration of Visitor Design Pattern to visit each database item/node ====================="
 );
 
 const graphDatabaseInstance = new TraversableDatabase<Person>();
@@ -224,3 +225,51 @@ graphDatabaseInstance.visit((person: Person) => {
   console.log(`Visitor has encountered the following record.`);
   console.table({ person });
 });
+
+console.log("\n\r");
+console.log("\n\r");
+console.log(
+  "================== Demonstration of Vistor Design Pattern to visit each database item/node ====================="
+);
+
+const rankableDatabase = new RankableStrategyDatabase<Engineer>();
+rankableDatabase.set(<Engineer>{
+  id: karpathy,
+  name: "Andrei Karpathy.V2",
+  description: "ML/AI Engineer.V2",
+  role: "director of FSD.V2",
+  level: 46,
+  pay: 500000,
+});
+
+rankableDatabase.set(<Engineer>{
+  id: "elon-musk",
+  name: "Elon Musk",
+  description: "Tesla & Space X Founder",
+  role: "Innovator",
+  level: 420,
+  pay: 900000,
+});
+
+rankableDatabase.set(<Engineer>{
+  id: "einstein",
+  name: "Albert Einsten",
+  description: "Physics and Astrophysics Extraordinaire",
+  role: "Genius",
+  level: 999,
+  // coommented out to simulate someone who is unpaid for null handling case
+  // pay: 900000
+});
+
+const highestRankingEngineer = rankableDatabase.selectHighestRank(
+  (item) => item.level
+);
+console.table({
+  "top-ranked-engineer": "rankedByLevel",
+  highestRankingEngineer,
+});
+
+const topPaidEngineer = rankableDatabase.selectHighestRank(
+  (item) => item.pay ?? -1
+);
+console.table({ "top-paid-engineer": "rankedByLevel", topPaidEngineer });
