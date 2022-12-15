@@ -39,4 +39,4 @@ export function createSingletonDatabase<T extends Indexable>() {
   return RedisLiteDatabase;
 }
 
-export const RedisSingletonInstance = createSingletonDatabase<Person>();
+export const RedisSingletonDatabaseInstance = createSingletonDatabase<Person>();

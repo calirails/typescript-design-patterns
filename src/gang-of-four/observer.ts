@@ -161,5 +161,5 @@ export function createSingletonObservableDatabase<T extends Indexable>() {
   return RedisObservableDatabase;
 }
 
-export const RedisSingletonInstance =
+export const RedisSingletonObservableDatabaseInstance =
   createSingletonObservableDatabase<Person>();

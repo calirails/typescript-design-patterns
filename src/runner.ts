@@ -3,6 +3,7 @@ import { KeyValuePairDatabase } from "./database/engine";
 import { createDatabase } from "./gang-of-four/factory";
 import { createSingletonDatabase } from "./gang-of-four/singleton";
 import { createSingletonObservableDatabase } from "./gang-of-four/observer";
+import { TraversableDatabase } from "./gang-of-four/visitor";
 
 const PersonKVPDatabase = new KeyValuePairDatabase<Person>();
 const edison = "person::edison";
@@ -189,3 +190,37 @@ const goner = RedisObservableDatabaseFromFactory.instance.get(karpathy);
 console.table({ goner });
 
 terminateAfterDeleteSubscription();
+
+console.log("\n\r");
+console.log("\n\r");
+console.log(
+  "================== Demonstration of Vistor Design Pattern to visit each database item/node ====================="
+);
+
+const graphDatabaseInstance = new TraversableDatabase<Person>();
+graphDatabaseInstance.set(<Person>{
+  id: edison,
+  name: "Thomas Edison",
+  description: "Inventor",
+});
+
+graphDatabaseInstance.set(<Engineer>{
+  id: karpathy,
+  name: "Andrei Karpathy.V2",
+  description: "ML/AI Engineer.V2",
+  role: "director of FSD.V2",
+  level: 46,
+});
+
+graphDatabaseInstance.set(<Engineer>{
+  id: "elon-musk",
+  name: "Elon Musk",
+  description: "Tesla & Space X Founder",
+  role: "Innovator",
+  level: 420,
+});
+
+graphDatabaseInstance.visit((person: Person) => {
+  console.log(`Visitor has encountered the following record.`);
+  console.table({ person });
+});

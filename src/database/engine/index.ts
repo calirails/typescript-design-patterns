@@ -6,7 +6,7 @@ export interface Database<T extends Indexable> {
 }
 
 export class KeyValuePairDatabase<T extends Indexable> implements Database<T> {
-  private dataStorage: Record<string, T> = {};
+  protected dataStorage: Record<string, T> = {};
 
   public set(value: T): T {
     const createdAt = new Date();
