@@ -2,9 +2,10 @@ import { Person, Engineer } from "./database/models";
 import { KeyValuePairDatabase } from "./database/engine";
 import { createDatabase } from "./gang-of-four/factory";
 import { createSingletonDatabase } from "./gang-of-four/singleton";
-import { createSingletonObservableDatabase } from "./gang-of-four/observer";
+import { RedisObservableDatabase } from "./gang-of-four/observer";
 import { TraversableDatabase } from "./gang-of-four/visitor";
 import { RankableStrategyDatabase } from "./gang-of-four/strategy";
+import { loadRecords, PersonRecordAdapter } from "./gang-of-four/adapter";
 
 const PersonKVPDatabase = new KeyValuePairDatabase<Person>();
 const edison = "person::edison";
@@ -118,12 +119,10 @@ console.log(
   "Adding Observable Design Pattern on top of Factory and Singleton Database Intance rather than previous instances."
 );
 
-const RedisObservableDatabaseFromFactory =
-  createSingletonObservableDatabase<Person>();
-
 // Add observer with a function that receives an instance of <T> log for visibility; can also destruture to just the value
-const terminateAfterSetSubscription =
-  RedisObservableDatabaseFromFactory.instance.onAfterSet((event) => {
+const redisObservableDatabase = new RedisObservableDatabase();
+const terminateAfterSetSubscription = redisObservableDatabase.onAfterSet(
+  (event) => {
     console.log(
       "Observable callback triggered from Observable Database AfterSet event triggered"
     );
@@ -133,10 +132,11 @@ const terminateAfterSetSubscription =
       happenedAt: event.createdAt.toDateString(),
     });
     // console.table({ ...event });
-  });
+  }
+);
 
 // Set it initially with no prior value
-RedisObservableDatabaseFromFactory.instance.set(<Engineer>{
+redisObservableDatabase.set(<Engineer>{
   id: karpathy,
   name: "Andrei Karpathy.V1",
   description: "ML/AI Engineer.V1",
@@ -145,7 +145,7 @@ RedisObservableDatabaseFromFactory.instance.set(<Engineer>{
 });
 
 // Set it again to see the prior value
-RedisObservableDatabaseFromFactory.instance.set(<Engineer>{
+redisObservableDatabase.set(<Engineer>{
   id: karpathy,
   name: "Andrei Karpathy.V2",
   description: "ML/AI Engineer.V2",
@@ -159,7 +159,7 @@ console.log(
   'AfterSet listener has unsubscribed and will not receive the "V3" updates from Observable Database and has no readily available reference to re-subscribe once termianted.'
 );
 // Set it again to see the prior value
-RedisObservableDatabaseFromFactory.instance.set(<Engineer>{
+redisObservableDatabase.set(<Engineer>{
   id: karpathy,
   name: "Andrei Karpathy.V3",
   description: "ML/AI Engineer.V3",
@@ -170,8 +170,8 @@ RedisObservableDatabaseFromFactory.instance.set(<Engineer>{
 console.log("\n\r");
 console.log("AfterDelete listener subscribed to track deletes.");
 
-const terminateAfterDeleteSubscription =
-  RedisObservableDatabaseFromFactory.instance.onAfterDelete((event) => {
+const terminateAfterDeleteSubscription = redisObservableDatabase.onAfterDelete(
+  (event) => {
     console.log(
       "Observable AfterDelete event callback triggered from Observable Database "
     );
@@ -179,15 +179,16 @@ const terminateAfterDeleteSubscription =
       fromValue: event.existingValue,
       happenedAt: event.deletedAt.toDateString(),
     });
-  });
+  }
+);
 
 // Delete the last modified record V3 instance of the reord
-RedisObservableDatabaseFromFactory.instance.delete(karpathy);
+redisObservableDatabase.delete(karpathy);
 
 console.log(
   "Confirming the deleted record is no longer retrievable from Database."
 );
-const goner = RedisObservableDatabaseFromFactory.instance.get(karpathy);
+const goner = redisObservableDatabase.get(karpathy);
 console.table({ goner });
 
 terminateAfterDeleteSubscription();
@@ -273,3 +274,21 @@ const topPaidEngineer = rankableDatabase.selectHighestRank(
   (item) => item.pay ?? -1
 );
 console.table({ "top-paid-engineer": "rankedByLevel", topPaidEngineer });
+
+console.log("\n\r");
+console.log("\n\r");
+console.log(
+  "================== Demonstration of Adapter Design Pattern that is used to write, by adapting serialized objects into records stored in a Database ====================="
+);
+
+// create an instance of the Adapter that will adapt each serialized json object into a database record.
+const targetDb = new RedisObservableDatabase<Person>();
+targetDb.onAfterSet((event) => {
+  console.log("Record loaded to backup database");
+  console.table({ event, ...event.newValue });
+});
+const personRecordAdapter = new PersonRecordAdapter()
+  .name("DB-Backup")
+  .database(targetDb);
+// Load the database
+loadRecords("./data/persons.json", personRecordAdapter);

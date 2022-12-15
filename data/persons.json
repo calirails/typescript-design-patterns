@@ -1,0 +1,12 @@
+[
+  {
+    "id": "em",
+    "name": "elon-musk",
+    "description": "entrepreneur"
+  },
+  {
+    "id": "ak",
+    "name": "andrei-karpathy",
+    "description": "engineer"
+  }
+]
