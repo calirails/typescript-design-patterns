@@ -1,4 +1,4 @@
-import { Engineer } from "./../database/models/index";
+import { Engineer } from "../gang-of-four/models/schema";
 import { TraversableDatabase } from "./visitor";
 
 export class RankableStrategyDatabase<

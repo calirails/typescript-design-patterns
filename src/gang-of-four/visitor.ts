@@ -1,4 +1,4 @@
-import { Indexable } from "./../database/models/index";
+import { Indexable } from "../database/entities";
 import { KeyValuePairDatabase } from "../database/engine";
 
 /*

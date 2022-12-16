@@ -1,5 +1,5 @@
 import { KeyValuePairDatabase } from "../database/engine";
-import { Indexable } from "../database/models";
+import { Indexable } from "../database/entities";
 
 /*
  * This demosntrates the Factory Pattern that conceals

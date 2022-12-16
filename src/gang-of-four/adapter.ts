@@ -1,5 +1,6 @@
-import { ObservableDatabase } from "./observer";
-import { Indexable, Person } from "./../database/models/index";
+import { ObservableDatabase } from "../database/engine";
+import { Indexable } from "./../database/entities";
+import { Person } from "../gang-of-four/models/schema";
 import * as fs from "fs";
 
 interface RecordHandler<T> {

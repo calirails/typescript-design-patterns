@@ -1,4 +1,4 @@
-import { Person, Engineer } from "./database/models";
+import { Person, Engineer } from "./gang-of-four/models/schema";
 import { KeyValuePairDatabase } from "./database/engine";
 import { createDatabase } from "./gang-of-four/factory";
 import { createSingletonDatabase } from "./gang-of-four/singleton";

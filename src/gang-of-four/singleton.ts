@@ -1,5 +1,6 @@
 import { Database } from "../database/engine";
-import { Indexable, Person, StorableEntity } from "../database/models";
+import { Indexable, StorableEntity } from "../database/entities";
+import { Person } from "../gang-of-four/models/schema";
 
 /*
  * This demosntrates builds on the Factory and returns a singleton

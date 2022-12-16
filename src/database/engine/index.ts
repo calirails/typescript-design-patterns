@@ -1,27 +1,25 @@
-import { Indexable, StorableEntity } from "../models";
+import { KeyValuePairDatabase } from "./key-value-pair-database";
+import { Indexable } from "../entities";
+import {
+  Listener,
+  BeforeSet,
+  BeforeDelete,
+  AfterSet,
+  AfterDelete,
+} from "./listener";
 
-export interface Database<T extends Indexable> {
+interface Database<T extends Indexable> {
   set(value: T): T;
   get(id: string): T | null;
 }
 
-export class KeyValuePairDatabase<T extends Indexable> implements Database<T> {
-  protected dataStorage: Record<string, T> = {};
+interface ObservableDatabase<T extends Indexable> extends Database<T> {
+  // The observable event hooks
+  onBeforeSet(Listener: Listener<BeforeSet<T>>): () => void;
+  onAfterSet(Listener: Listener<AfterSet<T>>): () => void;
 
-  public set(value: T): T {
-    const createdAt = new Date();
-    const updatedAt = createdAt;
-
-    const storable: StorableEntity = {
-      ...value,
-      createdAt,
-      updatedAt,
-    };
-    this.dataStorage[value.id] = storable as unknown as T;
-    return storable as unknown as T;
-  }
-
-  public get(id: string): T | null {
-    return this.dataStorage[id] ?? null;
-  }
+  onBeforeDelete(Listener: Listener<BeforeDelete<T>>): () => void;
+  onAfterDelete(Listener: Listener<AfterDelete<T>>): () => void;
 }
+
+export { Database, KeyValuePairDatabase, ObservableDatabase };
