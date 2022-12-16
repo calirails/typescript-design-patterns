@@ -45,6 +45,10 @@ export class RedisObservableDatabase<T extends Indexable>
     return storable as unknown as T;
   }
 
+  public recordCount(): number {
+    return this.dataStorage.size ?? 0;
+  }
+
   public get(id: string): T | null {
     return this.dataStorage.get(id) ?? null;
   }

@@ -5,7 +5,7 @@ import { createSingletonDatabase } from "./gang-of-four/singleton";
 import { RedisObservableDatabase } from "./gang-of-four/observer";
 import { TraversableDatabase } from "./gang-of-four/visitor";
 import { RankableStrategyDatabase } from "./gang-of-four/strategy";
-import { loadRecords, PersonRecordAdapter } from "./gang-of-four/adapter";
+import { loadRecords, RecordAdapter } from "./gang-of-four/adapter";
 
 const PersonKVPDatabase = new KeyValuePairDatabase<Person>();
 const edison = "person::edison";
@@ -278,17 +278,27 @@ console.table({ "top-paid-engineer": "rankedByLevel", topPaidEngineer });
 console.log("\n\r");
 console.log("\n\r");
 console.log(
-  "================== Demonstration of Adapter Design Pattern that is used to write, by adapting serialized objects into records stored in a Database ====================="
+  "================== Demonstration of Adapter Design Pattern that is used to restore a Backup Database from 1 to N text files. This is accomplished by using an adapter that reads in JSON data and adapts it to data records in a database.  ====================="
 );
 
 // create an instance of the Adapter that will adapt each serialized json object into a database record.
 const targetDb = new RedisObservableDatabase<Person>();
-targetDb.onAfterSet((event) => {
+const unsubscribe = targetDb.onAfterSet((event) => {
   console.log("Record loaded to backup database");
   console.table({ event, ...event.newValue });
 });
-const personRecordAdapter = new PersonRecordAdapter()
+const personRecordAdapter = new RecordAdapter()
   .name("DB-Backup")
   .database(targetDb);
 // Load the database
 loadRecords("./data/persons.json", personRecordAdapter);
+
+const characterRecordAdapter = new RecordAdapter<Person>()
+  .name("DB-Backup")
+  .database(targetDb);
+loadRecords("./data/characters.json", characterRecordAdapter);
+
+console.log(
+  `Record Count in restored database of persons and characters (actors) : ${targetDb.recordCount()}`
+);
+unsubscribe();
